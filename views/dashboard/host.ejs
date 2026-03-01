@@ -1,0 +1,106 @@
+<% layout("layouts/boilerplate") %>
+
+<div class="container mt-5">
+
+  <h1 class="mb-4">Host Dashboard</h1>
+
+  <!-- ===== STATS CARDS ===== -->
+  <div class="row mb-5">
+
+    <div class="col-md-4">
+      <div class="card p-3 text-center">
+        <h5>Total Listings</h5>
+        <h3><%= totalListings %></h3>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card p-3 text-center">
+        <h5>Total Revenue</h5>
+        <h3>₹<%= totalRevenue.toLocaleString("en-IN") %></h3>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card p-3 text-center">
+        <h5>Upcoming Bookings</h5>
+        <h3><%= upcomingCount %></h3>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== MONTHLY REVENUE CHART ===== -->
+  <h3 class="mb-3">Monthly Revenue</h3>
+  <canvas id="revenueChart" height="100"></canvas>
+
+  <hr class="my-5">
+
+  <!-- ===== RECENT BOOKINGS TABLE ===== -->
+  <h3 class="mb-3">Recent Bookings</h3>
+
+  <% if (bookings.length > 0) { %>
+
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Listing</th>
+          <th>Guest</th>
+          <th>Check-In</th>
+          <th>Check-Out</th>
+          <th>Status</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% bookings.forEach(booking => { %>
+          <tr>
+            <td><%= booking.listing.title %></td>
+            <td><%= booking.guest.username %></td>
+            <td><%= new Date(booking.checkIn).toLocaleDateString() %></td>
+            <td><%= new Date(booking.checkOut).toLocaleDateString() %></td>
+            <td><%= booking.status %></td>
+            <td>₹<%= booking.totalPrice.toLocaleString("en-IN") %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+  <% } else { %>
+    <p>No bookings yet.</p>
+  <% } %>
+
+</div>
+
+
+<!-- ===== CHART.JS ===== -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  const ctx = document.getElementById("revenueChart");
+
+  const monthlyData = <%- JSON.stringify(monthlyRevenue) %>;
+
+  const labels = monthlyData.map(m => "Month " + m._id);
+  const data = monthlyData.map(m => m.revenue);
+
+  new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: labels,
+      datasets: [{
+        label: "Revenue (₹)",
+        data: data,
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+</script>

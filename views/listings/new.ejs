@@ -1,0 +1,173 @@
+<% layout("layouts/boilerplate") %>
+
+<div class="container my-5">
+
+  <div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10">
+
+      <h2 class="mb-4 fw-semibold">Create a New Listing</h2>
+
+      <form 
+        method="POST" 
+        action="/listings" 
+        class="needs-validation" 
+        novalidate 
+        enctype="multipart/form-data"
+      >
+
+        <!-- ================= TITLE ================= -->
+        <div class="mb-3">
+          <label class="form-label" for="title">Title</label>
+          <input
+            type="text"
+            id="title"
+            name="listing[title]"
+            class="form-control"
+            placeholder="Add a catchy title"
+            required
+            minlength="5"
+          >
+          <div class="invalid-feedback">
+            Title must be at least 5 characters
+          </div>
+        </div>
+
+        <!-- ================= DESCRIPTION ================= -->
+        <div class="mb-3">
+          <label class="form-label" for="description">Description</label>
+          <textarea
+            id="description"
+            name="listing[description]"
+            class="form-control"
+            rows="4"
+            placeholder="Describe your place"
+            required
+            minlength="20"
+          ></textarea>
+          <div class="invalid-feedback">
+            Description must be at least 20 characters
+          </div>
+        </div>
+
+        <!-- ================= PRIMARY IMAGE URL (OPTIONAL) ================= -->
+        <div class="mb-3">
+          <label class="form-label" for="image">
+            Primary Image URL <span class="text-muted">(optional)</span>
+          </label>
+          <input
+            type="url"
+            id="image"
+            name="listing[image][url]"
+            class="form-control"
+            placeholder="https://example.com/image.jpg"
+          >
+          <small class="text-muted">
+            Used only if no images are uploaded
+          </small>
+        </div>
+
+        <!-- ================= MULTIPLE IMAGE UPLOAD ================= -->
+        <div class="mb-3">
+          <label class="form-label" for="images">
+            Upload Images <span class="text-muted">(up to 10)</span>
+          </label>
+          <input
+            type="file"
+            id="images"
+            name="images"
+            class="form-control"
+            multiple
+            accept="image/*"
+          >
+          <small class="text-muted">
+            Images will be uploaded securely to Cloudinary
+          </small>
+        </div>
+
+        <!-- ================= PRICE + COUNTRY ================= -->
+        <div class="row">
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label" for="price">Price (₹ / night)</label>
+            <input
+              type="number"
+              id="price"
+              name="listing[price]"
+              class="form-control"
+              placeholder="1200"
+              required
+              min="1"
+              step="1"
+            >
+            <div class="invalid-feedback">
+              Please enter a valid price
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label" for="country">Country</label>
+            <input
+              type="text"
+              id="country"
+              name="listing[country]"
+              class="form-control"
+              placeholder="India"
+              required
+            >
+            <div class="invalid-feedback">
+              Country is required
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ================= LOCATION ================= -->
+        <div class="mb-3">
+          <label class="form-label" for="location">Location</label>
+          <input
+            type="text"
+            id="location"
+            name="listing[location]"
+            class="form-control"
+            placeholder="Jaipur, Rajasthan"
+            required
+          >
+          <div class="invalid-feedback">
+            Location is required
+          </div>
+          <small class="text-muted">
+            <i class="fas fa-map-marker-alt"></i>
+            This will be automatically converted to map coordinates
+          </small>
+        </div>
+
+        <!-- ================= CATEGORY ================= -->
+        <div class="mb-4">
+          <label class="form-label" for="category">Category</label>
+          <select
+            id="category"
+            name="listing[category]"
+            class="form-select"
+            required
+          >
+            <option value="">Select a category</option>
+            <% categories.forEach(cat => { %>
+              <option value="<%= cat %>"><%= cat %></option>
+            <% }) %>
+          </select>
+          <div class="invalid-feedback">
+            Please select a category
+          </div>
+        </div>
+
+        <!-- ================= SUBMIT ================= -->
+        <button type="submit" class="btn btn-dark px-4">
+          Add Listing
+        </button>
+
+      </form>
+
+    </div>
+  </div>
+
+</div>

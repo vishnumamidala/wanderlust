@@ -1,0 +1,246 @@
+<% layout("layouts/boilerplate") %>
+
+<div class="wishlists-container">
+  <div class="wishlists-header">
+    <h1>Wishlists</h1>
+    <p>Save your favorite places</p>
+  </div>
+
+  <% if (wishlists && wishlists.length > 0) { %>
+    <% wishlists.forEach(wishlist => { %>
+      <div class="wishlist-section">
+        <div class="wishlist-header">
+          <h2><%= wishlist.name %></h2>
+          <span class="wishlist-count"><%= wishlist.listings.length %> saves</span>
+        </div>
+        
+        <% if (wishlist.listings && wishlist.listings.length > 0) { %>
+          <div class="wishlist-grid">
+            <% wishlist.listings.forEach(listing => { %>
+              <div class="wishlist-card">
+                <a href="/listings/<%= listing._id %>">
+                  <div class="wishlist-image">
+                    <img src="<%= listing.image?.url || 'https://via.placeholder.com/400x300' %>" alt="<%= listing.title %>">
+                  </div>
+                  <div class="wishlist-info">
+                    <h3><%= listing.title %></h3>
+                    <p><%= listing.location %>, <%= listing.country %></p>
+                    <p class="wishlist-price">₹<%= listing.price?.toLocaleString("en-IN") || 0 %> night</p>
+                  </div>
+                </a>
+                <form action="/wishlists/<%= wishlist._id %>/remove/<%= listing._id %>" method="POST" class="remove-form">
+                  <button type="submit" class="remove-btn" title="Remove from wishlist">
+                    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="presentation" focusable="false" style="display: block; height: 16px; width: 16px; fill: white;">
+                      <path d="M16 28c-.5 0-1-.2-1.4-.5L4.7 18.2c-1.1-1-1.8-2.4-1.8-3.9 0-3.3 2.7-6 6-6 1.5 0 2.9.6 4 1.5.2-.4.5-.8.9-1.1 1.3-1.1 3.2-1.4 4.9-1.4 1.7 0 3.6.3 4.9 1.4.4.3.7.7.9 1.1 1.1-.9 2.5-1.5 4-1.5 3.3 0 6 2.7 6 6 0 1.5-.7 2.9-1.8 3.9l-9.9 9.3c-.4.3-.9.5-1.4.5z"></path>
+                    </svg>
+                  </button>
+                </form>
+              </div>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <div class="empty-wishlist">
+            <p>No listings saved yet</p>
+          </div>
+        <% } %>
+      </div>
+    <% }) %>
+  <% } else { %>
+    <div class="no-wishlists">
+      <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="presentation" focusable="false" style="display: block; height: 64px; width: 64px; fill: #717171; margin-bottom: 16px;">
+        <path d="M16 28c-.5 0-1-.2-1.4-.5L4.7 18.2c-1.1-1-1.8-2.4-1.8-3.9 0-3.3 2.7-6 6-6 1.5 0 2.9.6 4 1.5.2-.4.5-.8.9-1.1 1.3-1.1 3.2-1.4 4.9-1.4 1.7 0 3.6.3 4.9 1.4.4.3.7.7.9 1.1 1.1-.9 2.5-1.5 4-1.5 3.3 0 6 2.7 6 6 0 1.5-.7 2.9-1.8 3.9l-9.9 9.3c-.4.3-.9.5-1.4.5z"></path>
+      </svg>
+      <h3>No wishlists yet</h3>
+      <p>As you search, click the heart icon on listings to save them here.</p>
+      <a href="/listings" class="btn btn-primary">Start exploring</a>
+    </div>
+  <% } %>
+</div>
+
+<style>
+.wishlists-container {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 80px 80px 40px;
+}
+
+.wishlists-header {
+  margin-bottom: 32px;
+}
+
+.wishlists-header h1 {
+  font-size: 32px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
+
+.wishlists-header p {
+  font-size: 16px;
+  color: #717171;
+  margin: 0;
+}
+
+.wishlist-section {
+  margin-bottom: 40px;
+}
+
+.wishlist-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.wishlist-header h2 {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.wishlist-count {
+  font-size: 16px;
+  color: #717171;
+}
+
+.wishlist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.wishlist-card {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.wishlist-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.wishlist-card a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.wishlist-image {
+  height: 200px;
+  overflow: hidden;
+}
+
+.wishlist-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.wishlist-info {
+  padding: 16px;
+  background: white;
+  border: 1px solid #ebebeb;
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+}
+
+.wishlist-info h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wishlist-info p {
+  font-size: 14px;
+  color: #717171;
+  margin: 0 0 8px 0;
+}
+
+.wishlist-price {
+  font-weight: 600;
+  color: #222 !important;
+}
+
+.remove-form {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
+.remove-btn {
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.remove-btn:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.empty-wishlist {
+  padding: 40px;
+  background: #f7f7f7;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.empty-wishlist p {
+  color: #717171;
+  margin: 0;
+}
+
+.no-wishlists {
+  text-align: center;
+  padding: 80px 40px;
+  background: #f7f7f7;
+  border-radius: 12px;
+}
+
+.no-wishlists h3 {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
+
+.no-wishlists p {
+  font-size: 16px;
+  color: #717171;
+  margin: 0 0 24px 0;
+}
+
+.btn {
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-primary {
+  background: linear-gradient(to right, #e61e4d, #e31c5f, #d70466);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(to right, #d41e4d, #c31c5f);
+}
+
+@media (max-width: 768px) {
+  .wishlists-container {
+    padding: 80px 24px 24px;
+  }
+}
+</style>

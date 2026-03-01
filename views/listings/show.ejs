@@ -1,0 +1,388 @@
+<% layout("layouts/boilerplate") %>
+
+<div class="show-page-wrapper">
+  <div class="show-page">
+    <!-- Header -->
+    <div class="show-header">
+      <h1 class="show-title"><%= listing.title %></h1>
+      <div class="show-location">
+        <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; fill: currentColor;">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+        </svg>
+        <span><%= listing.location %>, <%= listing.country %></span>
+        <a href="#map">Show map</a>
+      </div>
+    </div>
+
+    <!-- Images -->
+    <div class="show-images">
+      <div class="main-image">
+        <img src="<%= listing.image?.url || listing.image %>" alt="<%= listing.title %>">
+      </div>
+      <div class="side-images">
+        <% if (listing.images && listing.images.length > 0) { %>
+          <% listing.images.slice(0, 2).forEach(img => { %>
+            <img src="<%= img.url %>" alt="Listing image">
+          <% }) %>
+        <% } else { %>
+          <img src="<%= listing.image?.url || listing.image %>" alt="Listing image">
+          <img src="<%= listing.image?.url || listing.image %>" alt="Listing image">
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="show-content">
+      <div class="show-main">
+        <!-- Host Info -->
+        <div class="host-section">
+          <div class="host-info">
+            <h2>Hosted by <%= listing.author ? listing.author.username : 'Unknown' %></h2>
+            <p><%= listing.guests || 2 %> guests · <%= listing.bedrooms || 1 %> bedroom · <%= listing.beds || 1 %> bed · <%= listing.bathrooms || 1 %> bath</p>
+          </div>
+          <div class="host-avatar">
+            <img src="https://ui-avatars.com/api/?name=<%= encodeURIComponent(listing.author ? listing.author.username : 'U') %>&background=ff385c&color=fff" alt="Host">
+          </div>
+        </div>
+
+        <hr>
+
+        <!-- Highlights -->
+        <div class="highlights-section">
+          <div class="highlight-item">
+            <i class="fa-solid fa-key"></i>
+            <div>
+              <h4>Self check-in</h4>
+              <p>Check yourself in with the lockbox.</p>
+            </div>
+          </div>
+          <div class="highlight-item">
+            <i class="fa-solid fa-calendar-check"></i>
+            <div>
+              <h4>Free cancellation</h4>
+              <p>Cancel up to 48 hours before check-in.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="description">
+          <h3>About this place</h3>
+          <p><%= listing.description %></p>
+        </div>
+
+        <!-- Sleep Arrangements -->
+        <div class="sleep-section">
+          <h3>Where you'll sleep</h3>
+          <div class="sleep-grid">
+            <div class="sleep-card">
+              <i class="fa-solid fa-bed"></i>
+              <h4>Bedroom</h4>
+              <p><%= listing.bedrooms || 1 %> bed<%= (listing.bedrooms || 1) > 1 ? 's' : '' %></p>
+            </div>
+            <div class="sleep-card">
+              <i class="fa-solid fa-bath"></i>
+              <h4>Bathroom</h4>
+              <p><%= listing.bathrooms || 1 %> bath<%= (listing.bathrooms || 1) > 1 ? 's' : '' %></p>
+            </div>
+            <div class="sleep-card">
+              <i class="fa-solid fa-user-group"></i>
+              <h4>Guests</h4>
+              <p>Up to <%= listing.guests || 2 %> guests</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Map -->
+        <div id="map" class="map-section">
+          <h3>Where you'll be</h3>
+          <div id="listingMap"></div>
+          <div class="location-info">
+            <h4><%= listing.location %>, <%= listing.country %></h4>
+            <p><%= listing.description ? listing.description.substring(0, 200) : 'A beautiful location.' %>...</p>
+          </div>
+        </div>
+
+        <!-- Reviews -->
+        <div class="reviews-section">
+          <h3>
+            <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: currentColor; display: inline-block; vertical-align: middle; margin-right: 4px;">
+              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+            </svg>
+            <%= avgRating %> (<%= reviewCount %> reviews)
+          </h3>
+          
+          <% if (listing.reviews && listing.reviews.length > 0) { %>
+            <div class="reviews-grid">
+              <% listing.reviews.slice(0, 4).forEach(review => { %>
+                <div class="review-item">
+                  <div class="reviewer-info">
+                    <img src="https://ui-avatars.com/api/?name=<%= encodeURIComponent(review.author ? review.author.username : 'U') %>&background=717171&color=fff" alt="Reviewer">
+                    <div>
+                      <h4><%= review.author ? review.author.username : 'Anonymous' %></h4>
+                      <span><%= review.createdAt ? new Date(review.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Recently' %></span>
+                    </div>
+                  </div>
+                  <div class="review-rating">
+                    <% for (let i = 1; i <= 5; i++) { %>
+                      <svg viewBox="0 0 24 24" style="width: 14px; height: 14px; fill: <%= i <= review.rating ? '#ff385c' : '#ddd' %>; display: inline-block;">
+                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                      </svg>
+                    <% } %>
+                  </div>
+                  <p><%= review.comment %></p>
+                </div>
+              <% }) %>
+            </div>
+            
+            <% if (listing.reviews.length > 4) { %>
+              <a href="#" class="btn btn-outline" style="margin-top: 16px;">Show all <%= reviewCount %> reviews</a>
+            <% } %>
+          <% } else { %>
+            <p style="color: #737373;">No reviews yet. Be the first to leave a review!</p>
+          <% } %>
+        </div>
+
+        <!-- Add Review Form -->
+        <% if (typeof currentUser !== 'undefined' && currentUser) { %>
+          <div class="add-review-section">
+            <h3>Leave a Review</h3>
+            <form action="/listings/<%= listing._id %>/reviews" method="POST" class="review-form">
+              <div class="form-group">
+                <label>Rating</label>
+                <select name="review[rating]">
+                  <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+                  <option value="4">⭐⭐⭐⭐ Very Good</option>
+                  <option value="3">⭐⭐⭐ Good</option>
+                  <option value="2">⭐⭐ Fair</option>
+                  <option value="1">⭐ Poor</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Comment</label>
+                <textarea name="review[comment]" rows="4" placeholder="Share your experience..."></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary">Submit Review</button>
+            </form>
+          </div>
+        <% } %>
+      </div>
+
+      <!-- Booking Sidebar -->
+      <div class="booking-sidebar">
+        <div class="booking-card">
+          <div class="booking-price">
+            <span class="amount">₹<%= listing.price.toLocaleString("en-IN") %></span>
+            <span class="period">night</span>
+          </div>
+          
+          <% if (reviewCount > 0) { %>
+            <div class="booking-rating">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+              </svg>
+              <span><%= avgRating %></span>
+              <span class="review-count">(<%= reviewCount %> reviews)</span>
+            </div>
+          <% } %>
+          <form action="/bookings/<%= listing._id %>" method="POST" class="booking-form" id="bookingForm">
+  <div class="date-inputs">
+    <div class="date-input">
+      <label>Check-in</label>
+      <input type="date" name="checkIn" id="checkIn" required>
+    </div>
+    <div class="date-input">
+      <label>Checkout</label>
+      <input type="date" name="checkOut" id="checkOut" required>
+    </div>
+  </div>
+
+  <div class="guests-input">
+    <label>Guests</label>
+    <select name="guests" id="guestsSelect">
+      <% for (let i = 1; i <= (listing.guests || 6); i++) { %>
+        <option value="<%= i %>"><%= i %> guest<%= i > 1 ? 's' : '' %></option>
+      <% } %>
+    </select>
+  </div>
+
+  <button type="submit" class="booking-btn">Reserve</button>
+</form>
+
+          
+          
+          <p class="booking-note">You won't be charged yet</p>
+          
+          <div class="price-breakdown">
+            <div class="price-row">
+              <span>₹<%= listing.price.toLocaleString("en-IN") %> x <span id="nightsCount">7</span> nights</span>
+              <span id="nightsTotal">₹<%= (listing.price * 7).toLocaleString("en-IN") %></span>
+            </div>
+            <div class="price-row">
+              <span>Cleaning fee</span>
+              <span>₹<%= Math.round(listing.price * 0.1).toLocaleString("en-IN") %></span>
+            </div>
+            <div class="price-row">
+              <span>Service fee</span>
+              <span>₹<%= Math.round(listing.price * 0.12).toLocaleString("en-IN") %></span>
+            </div>
+            <div class="price-row total">
+              <span>Total before taxes</span>
+              <span id="grandTotal">₹<%= Math.round(listing.price * 7 + listing.price * 0.1 + listing.price * 0.12).toLocaleString("en-IN") %></span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Owner Actions -->
+        <% if (typeof currentUser !== 'undefined' && currentUser && listing.author && listing.author._id.toString() === currentUser._id.toString()) { %>
+          <div class="owner-actions">
+            <a href="/listings/<%= listing._id %>/edit" class="btn btn-outline">Edit Listing</a>
+            <form action="/listings/<%= listing._id %>?_method=DELETE" method="POST">
+              <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Delete this listing?')">Delete</button>
+            </form>
+          </div>
+        <% } %>
+        
+        <!-- Report -->
+        <a href="#" class="report-link">Report this listing</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Dynamic price calculation
+document.addEventListener('DOMContentLoaded', function() {
+  var pricePerNight = <%= listing.price || 0 %>;
+  var checkInInput = document.getElementById('checkIn');
+  var checkOutInput = document.getElementById('checkOut');
+  var nightsCountEl = document.getElementById('nightsCount');
+  var nightsTotalEl = document.getElementById('nightsTotal');
+  var grandTotalEl = document.getElementById('grandTotal');
+  
+  // Set minimum date to today
+  var today = new Date().toISOString().split('T')[0];
+  if (checkInInput) checkInInput.setAttribute('min', today);
+  
+  function updatePriceCalculation() {
+    var checkIn = new Date(checkInInput.value);
+    var checkOut = new Date(checkOutInput.value);
+    
+    if (checkIn && checkOut && checkOut > checkIn) {
+      var nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
+      var subtotal = nights * pricePerNight;
+      var cleaningFee = Math.round(pricePerNight * 0.1);
+      var serviceFee = Math.round(pricePerNight * 0.12);
+      var total = subtotal + cleaningFee + serviceFee;
+      
+      nightsCountEl.textContent = nights;
+      nightsTotalEl.textContent = '₹' + subtotal.toLocaleString("en-IN");
+      grandTotalEl.textContent = '₹' + total.toLocaleString("en-IN");
+    } else {
+      // Default to 7 nights if no dates selected
+      var nights = 7;
+      var subtotal = nights * pricePerNight;
+      var cleaningFee = Math.round(pricePerNight * 0.1);
+      var serviceFee = Math.round(pricePerNight * 0.12);
+      var total = subtotal + cleaningFee + serviceFee;
+      
+      nightsCountEl.textContent = nights;
+      nightsTotalEl.textContent = '₹' + subtotal.toLocaleString("en-IN");
+      grandTotalEl.textContent = '₹' + total.toLocaleString("en-IN");
+    }
+  }
+  
+  if (checkInInput && checkOutInput) {
+    checkInInput.addEventListener('change', function() {
+      if (checkOutInput) {
+        checkOutInput.setAttribute('min', this.value);
+        updatePriceCalculation();
+      }
+    });
+    
+    checkOutInput.addEventListener('change', updatePriceCalculation);
+  }
+  
+  // Initialize map if coordinates exist
+  var lat = <%= listing.latitude || 28.6139 %>;
+  var lng = <%= listing.longitude || 77.2090 %>;
+  
+  if (lat && lng && typeof L !== 'undefined') {
+    try {
+      var map = L.map('listingMap').setView([lat, lng], 13);
+      
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+      
+      L.marker([lat, lng])
+        .addTo(map)
+        .bindPopup('<%= listing.location.replace(/'/, "\\'") %>, <%= listing.country %>')
+        .openPopup();
+    } catch (e) {
+      console.warn('Map initialization failed:', e);
+    }
+  }
+    // ================================
+  // NEW FEATURE: DATE BLOCKING
+  // ================================
+
+  fetch("/bookings/dates/<%= listing._id %>")
+    .then(res => res.json())
+    .then(bookedRanges => {
+
+      function isDateBooked(date) {
+        return bookedRanges.some(range => {
+          const start = new Date(range.checkIn);
+          const end = new Date(range.checkOut);
+          return date >= start && date < end;
+        });
+      }
+
+      if (checkInInput) {
+        checkInInput.addEventListener("change", function () {
+          const selectedDate = new Date(this.value);
+          if (isDateBooked(selectedDate)) {
+            alert("This check-in date is already booked.");
+            this.value = "";
+          }
+        });
+      }
+
+      if (checkOutInput) {
+        checkOutInput.addEventListener("change", function () {
+          const selectedDate = new Date(this.value);
+          if (isDateBooked(selectedDate)) {
+            alert("This checkout date is already booked.");
+            this.value = "";
+          }
+        });
+      }
+
+      // Prevent form submit if conflict
+      const bookingForm = document.getElementById("bookingForm");
+
+      if (bookingForm) {
+        bookingForm.addEventListener("submit", function (e) {
+          const checkInDate = new Date(checkInInput.value);
+          const checkOutDate = new Date(checkOutInput.value);
+
+          const conflict = bookedRanges.some(range => {
+            const start = new Date(range.checkIn);
+            const end = new Date(range.checkOut);
+            return checkInDate < end && checkOutDate > start;
+          });
+
+          if (conflict) {
+            e.preventDefault();
+            alert("Selected dates conflict with an existing booking.");
+          }
+        });
+      }
+
+    })
+    .catch(err => console.error("Booking date fetch error:", err));
+
+});
+</script>
+

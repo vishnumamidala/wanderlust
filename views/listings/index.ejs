@@ -1,0 +1,342 @@
+<% layout("layouts/boilerplate") %>
+
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="hero-content">
+    <h1 class="hero-title">
+      Find your next
+      <span>amazing stay</span>
+    </h1>
+    <p class="hero-subtitle">Discover unique homes, cabins, and experiences around the world</p>
+    
+    <!-- Search Box -->
+    <form class="search-container" action="/listings" method="GET">
+      <div class="search-field">
+        <label>Where</label>
+        <input type="text" name="location" placeholder="Search destinations" value="<%= typeof location !== 'undefined' ? location : '' %>">
+      </div>
+      <div class="search-divider"></div>
+      <div class="search-field">
+        <label>Check in</label>
+        <input type="date" name="checkIn" id="checkIn">
+      </div>
+      <div class="search-divider"></div>
+      <div class="search-field">
+        <label>Check out</label>
+        <input type="date" name="checkOut" id="checkOut">
+      </div>
+      <div class="search-divider"></div>
+      <div class="search-field">
+        <label>Guests</label>
+        <input type="number" name="guests" placeholder="Add guests" min="1" value="<%= typeof guests !== 'undefined' ? guests : '' %>">
+      </div>
+      <button type="submit" class="search-btn">
+        <svg viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </button>
+    </form>
+  </div>
+</section>
+
+<!-- Categories -->
+<div class="categories-section">
+  <div class="categories-scroll">
+    <a href="/listings" class="category-item <%= !category ? 'active' : '' %>" data-category="all">
+      <i class="fa-solid fa-star"></i>
+      <span>All</span>
+    </a>
+  <% 
+  const categories = [
+    { name: 'Beach', icon: 'fa-umbrella-beach' },
+    { name: 'Cabins', icon: 'fa-house-chimney' },
+    { name: 'Trending', icon: 'fa-fire' },
+    { name: 'City', icon: 'fa-city' },
+    { name: 'Mountains', icon: 'fa-mountain-sun' },
+    { name: 'Castles', icon: 'fa-dungeon' },
+    { name: 'Camping', icon: 'fa-campground' },
+    { name: 'Farms', icon: 'fa-tractor' },
+    { name: 'Arctic', icon: 'fa-snowflake' },
+    { name: 'Domes', icon: 'fa-circle' },
+    { name: 'Boats', icon: 'fa-sailboat' },
+    { name: 'Lakefront', icon: 'fa-water' },
+    { name: 'Countryside', icon: 'fa-tree' },
+    { name: 'Tiny Homes', icon: 'fa-home' },
+    { name: 'OMG!', icon: 'fa-star' },
+    { name: 'National Parks', icon: 'fa-tree' }
+  ];
+%>
+<% categories.forEach(cat => { %>
+  <a href="/listings?category=<%= encodeURIComponent(cat.name) %>" 
+     class="category-item <%= category === cat.name ? 'active' : '' %>" 
+     data-category="<%= cat.name.toLowerCase().replace(/\s+/g, '-') %>">
+    <i class="fa-solid <%= cat.icon %>"></i>
+    <span><%= cat.name %></span>
+  </a>
+<% }) %>
+  </div>
+</div>
+
+<!-- Filters & Sort Bar -->
+<div style="padding: 16px 80px 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+  <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+    <select id="sortSelect" onchange="applySort()" style="padding: 12px 16px; border: 1px solid #e5e5e5; border-radius: 12px; font-size: 14px; cursor: pointer; background: white;">
+      <option value="newest" <%= sort === 'newest' || !sort ? 'selected' : '' %>>Newest</option>
+      <option value="price-low" <%= sort === 'price-low' ? 'selected' : '' %>>Price: Low to High</option>
+      <option value="price-high" <%= sort === 'price-high' ? 'selected' : '' %>>Price: High to Low</option>
+      <option value="rating" <%= sort === 'rating' ? 'selected' : '' %>>Highest Rated</option>
+    </select>
+    
+    <select id="priceFilter" onchange="applyFilters()" style="padding: 12px 16px; border: 1px solid #e5e5e5; border-radius: 12px; font-size: 14px; cursor: pointer; background: white;">
+      <option value="">Any Price</option>
+      <option value="0-1000" <%= priceRange === '0-1000' ? 'selected' : '' %>>Under ₹1,000</option>
+      <option value="1000-5000" <%= priceRange === '1000-5000' ? 'selected' : '' %>>₹1,000 - ₹5,000</option>
+      <option value="5000-10000" <%= priceRange === '5000-10000' ? 'selected' : '' %>>₹5,000 - ₹10,000</option>
+      <option value="10000+" <%= priceRange === '10000+' ? 'selected' : '' %>>₹10,000+</option>
+    </select>
+    
+    <select id="guestsFilter" onchange="applyFilters()" style="padding: 12px 16px; border: 1px solid #e5e5e5; border-radius: 12px; font-size: 14px; cursor: pointer; background: white;">
+      <option value="">Any Guests</option>
+      <option value="1" <%= guestsFilter === '1' ? 'selected' : '' %>>1+ Guest</option>
+      <option value="2" <%= guestsFilter === '2' ? 'selected' : '' %>>2+ Guests</option>
+      <option value="4" <%= guestsFilter === '4' ? 'selected' : '' %>>4+ Guests</option>
+      <option value="6" <%= guestsFilter === '6' ? 'selected' : '' %>>6+ Guests</option>
+    </select>
+    
+    <% if (category || location || sort || priceRange || guestsFilter) { %>
+      <a href="/listings" class="btn btn-outline" style="padding: 12px 16px; font-size: 14px;">
+        <i class="fa-solid fa-xmark" style="margin-right: 6px;"></i>
+        Clear All
+      </a>
+    <% } %>
+  </div>
+  
+  <div style="font-size: 14px; color: #717171;">
+    <%= allListings.length %> <%= allListings.length === 1 ? 'place' : 'places' %>
+  </div>
+</div>
+
+<!-- Listings Grid -->
+<section class="listings-section">
+  <div class="listings-grid" id="listingsGrid">
+    <% if (allListings.length === 0) { %>
+      <div style="grid-column: 1/-1; text-align: center; padding: 80px 0;">
+        <i class="fa-solid fa-search" style="font-size: 48px; color: #ddd; margin-bottom: 16px;"></i>
+        <h3 style="font-size: 24px; margin-bottom: 8px;">No places found</h3>
+        <p style="color: #717171; margin-bottom: 24px;">Try adjusting your search or filters</p>
+        <a href="/listings" class="btn btn-primary">View All Listings</a>
+      </div>
+    <% } else { %>
+      <% allListings.forEach(listing => { 
+        const categoryClass = listing.category ? listing.category.toLowerCase().replace(/\s+/g, '-') : 'all';
+      %>
+        <div class="listing-card" data-category="<%= categoryClass %>">
+          <div class="listing-image-wrapper">
+            <img src="<%= listing.image.url %>" alt="<%= listing.title %>" loading="lazy">
+            <button type="button" class="listing-favorite" data-listing-id="<%= listing._id %>" onclick="event.preventDefault(); event.stopPropagation(); toggleWishlist('<%= listing._id %>')">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+              </svg>
+            </button>
+            <% if (listing.reviewCount < 3) { %>
+              <span class="listing-badge">New</span>
+            <% } %>
+          </div>
+          <a href="/listings/<%= listing._id %>" class="listing-link">
+            <div class="listing-info">
+              <div class="listing-header">
+                <h3><%= listing.location %>, <%= listing.country %></h3>
+                <% if (listing.reviewCount > 0) { %>
+                  <div class="listing-rating">
+                    <svg viewBox="0 0 24 24">
+                      <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                    </svg>
+                    <%= listing.avgRating %>
+                  </div>
+                <% } %>
+              </div>
+              <p class="listing-location">Hosted by <%= listing.author ? listing.author.username : 'Unknown' %></p>
+              <p class="listing-host"><%= listing.description ? listing.description.substring(0, 60) + '...' : 'Beautiful stay' %></p>
+              <p class="listing-price"><strong>₹<%= listing.price.toLocaleString("en-IN") %></strong> night</p>
+            </div>
+          </a>
+        </div>
+      <% }) %>
+    <% } %>
+  </div>
+</section>
+
+<!-- Pagination -->
+<% if (totalPages > 1) { %>
+  <div style="display: flex; justify-content: center; gap: 8px; padding: 40px;">
+    <% if (currentPage > 1) { %>
+      <a href="/listings?page=<%= currentPage - 1 %>" class="btn btn-outline" style="padding: 12px 20px;">
+        <i class="fa-solid fa-chevron-left"></i>
+      </a>
+    <% } %>
+    
+    <% for (let i = 1; i <= totalPages; i++) { %>
+      <a href="/listings?page=<%= i %>" class="btn <%= i === currentPage ? 'btn-primary' : 'btn-outline' %>" style="padding: 12px 20px; min-width: 48px;">
+        <%= i %>
+      </a>
+    <% } %>
+    
+    <% if (currentPage < totalPages) { %>
+      <a href="/listings?page=<%= currentPage + 1 %>" class="btn btn-outline" style="padding: 12px 20px;">
+        <i class="fa-solid fa-chevron-right"></i>
+      </a>
+    <% } %>
+  </div>
+<% } %>
+
+<script>
+// Set minimum dates
+document.addEventListener('DOMContentLoaded', function() {
+  const today = new Date().toISOString().split('T')[0];
+  const checkIn = document.getElementById('checkIn');
+  const checkOut = document.getElementById('checkOut');
+  
+  if (checkIn) {
+    checkIn.setAttribute('min', today);
+    checkIn.addEventListener('change', function() {
+      if (checkOut) checkOut.setAttribute('min', this.value);
+    });
+  }
+});
+
+// Apply sorting
+function applySort() {
+  const sort = document.getElementById('sortSelect').value;
+  const url = new URL(window.location.href);
+  url.searchParams.set('sort', sort);
+  window.location.href = url.toString();
+}
+
+// Apply filters
+function applyFilters() {
+  const priceRange = document.getElementById('priceFilter').value;
+  const guestsFilter = document.getElementById('guestsFilter').value;
+  const url = new URL(window.location.href);
+  
+  if (priceRange) {
+    url.searchParams.set('price', priceRange);
+  } else {
+    url.searchParams.delete('price');
+  }
+  
+  if (guestsFilter) {
+    url.searchParams.set('guests', guestsFilter);
+  }
+  
+  window.location.href = url.toString();
+}
+
+// Toggle wishlist
+// ================== WISHLIST TOGGLE ==================
+async function toggleWishlist(listingId) {
+  try {
+    const response = await fetch('/wishlists/add/' + listingId, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    });
+    
+    // Check if redirected to login (not authenticated)
+    if (response.redirected || response.url.includes('/users/login')) {
+      // Store the flash message in session storage
+      sessionStorage.setItem('loginMessage', 'Please sign in or sign up to add to wishlist');
+      window.location.href = '/users/login';
+      return;
+    }
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      const heart = document.querySelector('.listing-favorite[data-listing-id="' + listingId + '"]');
+      if (heart) {
+        if (result.action === 'added') {
+          heart.classList.add('active');
+          showToast('Added to wishlist!', 'success');
+        } else {
+          heart.classList.remove('active');
+          showToast('Removed from wishlist', 'info');
+        }
+      }
+    } else if (result.redirect) {
+      window.location.href = result.redirect;
+    } else {
+      showToast('Failed to update wishlist', 'error');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    // Likely a redirect or authentication issue
+    sessionStorage.setItem('loginMessage', 'Please sign in or sign up to continue');
+    window.location.href = '/users/login';
+  }
+}
+
+// Show toast notification
+function showToast(message, type = 'success') {
+  // Remove any existing toast
+  const existingToast = document.querySelector('.toast-notification');
+  if (existingToast) existingToast.remove();
+  
+  // Create toast element
+  const toast = document.createElement('div');
+  toast.className = 'toast-notification toast-' + type;
+  toast.innerHTML = `
+    <div class="toast-icon">
+      ${type === 'success' ? '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>' : 
+        type === 'error' ? '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>' :
+        '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>'}
+    </div>
+    <span class="toast-message">${message}</span>
+    <button class="toast-close" onclick="this.parentElement.remove()">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+    </button>
+  `;
+  
+  // Add to document
+  document.body.appendChild(toast);
+  
+  // Animate in
+  setTimeout(() => {
+    toast.style.opacity = '1';
+    toast.style.transform = 'translateX(-50%) translateY(0)';
+  }, 10);
+  
+  // Auto remove after 3 seconds
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(-50%) translateY(10px)';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+// Check wishlist status on page load
+async function checkWishlistStatus() {
+  try {
+    const response = await fetch('/wishlists/status', {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    const data = await response.json();
+    
+    if (data.wishlist && data.wishlist.listings) {
+      data.wishlist.listings.forEach(listingId => {
+        const heart = document.querySelector('.listing-favorite[data-listing-id="' + listingId + '"]');
+        if (heart) heart.classList.add('active');
+      });
+    }
+  } catch (error) {
+    console.log('Could not load wishlist status');
+  }
+}
+
+// Run on page load
+document.addEventListener('DOMContentLoaded', checkWishlistStatus);
+</script>
+

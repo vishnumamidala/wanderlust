@@ -1,0 +1,65 @@
+<% layout("layouts/boilerplate") %>
+
+<div class="auth-page">
+  <div class="auth-card">
+    <h1>Welcome back</h1>
+    
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="flash-message flash-error" style="margin-bottom: 20px;">
+        <%= error %>
+      </div>
+    <% } %>
+    
+    <form action="/users/login" method="POST" class="auth-form">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      
+      <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px;">Log in</button>
+    </form>
+    
+    <div class="auth-link">
+      Don't have an account? <a href="/users/register">Sign up</a>
+    </div>
+  </div>
+</div>
+
+<script>
+// Check for signup message
+document.addEventListener('DOMContentLoaded', function() {
+  const loginMessage = sessionStorage.getItem('loginMessage');
+  if (loginMessage) {
+    const flashDiv = document.createElement('div');
+    flashDiv.className = 'flash-container';
+    flashDiv.innerHTML = `
+      <div class="flash-toast flash-error">
+        <div class="flash-icon-wrapper">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" fill="currentColor"/>
+          </svg>
+        </div>
+        <span class="flash-message-text">${loginMessage}</span>
+        <button class="flash-close-btn" onclick="this.closest('.flash-toast').remove()">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z" fill="currentColor"/>
+          </svg>
+        </button>
+      </div>
+    `;
+    
+    document.body.insertBefore(flashDiv, document.body.firstChild);
+    sessionStorage.removeItem('loginMessage');
+    
+    setTimeout(() => {
+      flashDiv.querySelector('.flash-toast').style.opacity = '0';
+      setTimeout(() => flashDiv.remove(), 300);
+    }, 4000);
+  }
+});
+</script>

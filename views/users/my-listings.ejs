@@ -1,0 +1,55 @@
+<% layout("layouts/boilerplate") %>
+
+<div style="padding: 100px 80px 60px;">
+  <div style="max-width: 1800px; margin: 0 auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+      <h1 style="font-size: 32px; font-weight: 600;">My Listings</h1>
+      <a href="/listings/new" class="btn btn-primary">
+        <i class="fa-solid fa-plus" style="margin-right: 8px;"></i>
+        Create New Listing
+      </a>
+    </div>
+    
+    <% if (allListings.length === 0) { %>
+      <div style="text-align: center; padding: 80px 0; background: #fafafa; border-radius: 16px;">
+        <i class="fa-solid fa-home" style="font-size: 48px; color: #ddd; margin-bottom: 16px;"></i>
+        <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 8px;">No listings yet</h2>
+        <p style="color: #717171; margin-bottom: 24px;">Create your first listing and start hosting!</p>
+        <a href="/listings/new" class="btn btn-primary">Create Listing</a>
+      </div>
+    <% } else { %>
+      <div class="listings-grid">
+        <% allListings.forEach(listing => { %>
+          <div class="listing-card">
+            <div class="listing-image-wrapper">
+              <img src="<%= listing.image.url %>" alt="<%= listing.title %>" loading="lazy">
+              <a href="/listings/<%= listing._id %>/edit" class="listing-favorite" style="background: rgba(0,0,0,0.5);">
+                <i class="fa-solid fa-pencil" style="color: white; font-size: 14px;"></i>
+              </a>
+            </div>
+            <div class="listing-info">
+              <div class="listing-header">
+                <h3><%= listing.location %>, <%= listing.country %></h3>
+                <% if (listing.reviewCount > 0) { %>
+                  <div class="listing-rating">
+                    <svg viewBox="0 0 24 24">
+                      <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                    </svg>
+                    <%= listing.avgRating %>
+                  </div>
+                <% } %>
+              </div>
+              <p class="listing-host"><%= listing.title %></p>
+              <p class="listing-price"><strong>₹<%= listing.price.toLocaleString("en-IN") %></strong> night</p>
+              <div style="display: flex; gap: 8px; margin-top: 12px;">
+                <a href="/listings/<%= listing._id %>" class="btn btn-outline" style="flex: 1; padding: 8px; font-size: 13px;">View</a>
+                <a href="/listings/<%= listing._id %>/edit" class="btn btn-outline" style="flex: 1; padding: 8px; font-size: 13px;">Edit</a>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+</div>
+

@@ -1,0 +1,279 @@
+<% layout("layouts/boilerplate") %>
+
+<div class="booking-show-container">
+  <div class="booking-show-main">
+    <h1 class="booking-title">Booking Confirmation</h1>
+    
+    <div class="booking-detail-card">
+      <div class="booking-header">
+        <div class="booking-status-section">
+          <span class="booking-status <%= booking.status %>"><%= booking.status %></span>
+        </div>
+        <h2><%= booking.listing.title %></h2>
+        <p class="booking-location"><%= booking.listing.location %>, <%= booking.listing.country %></p>
+      </div>
+      
+      <hr class="divider">
+      
+      <div class="booking-details">
+        <div class="detail-row">
+          <div class="detail-item">
+            <h4>Check-in</h4>
+            <p><%= new Date(booking.checkIn).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }) %></p>
+          </div>
+          <div class="detail-item">
+            <h4>Check-out</h4>
+            <p><%= new Date(booking.checkOut).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }) %></p>
+          </div>
+        </div>
+        
+        <div class="detail-row">
+          <div class="detail-item">
+            <h4>Guests</h4>
+            <p><%= booking.guests %> guest<%= booking.guests > 1 ? 's' : '' %></p>
+          </div>
+          <div class="detail-item">
+            <h4>Nights</h4>
+            <p><%= booking.nights %></p>
+          </div>
+        </div>
+      </div>
+      
+      <hr class="divider">
+      
+      <div class="booking-price">
+        <div class="price-row">
+          <span>₹<%= booking.listing.price.toLocaleString("en-IN") %> x <%= booking.nights %> nights</span>
+          <span>₹<%= booking.totalPrice.toLocaleString("en-IN") %></span>
+        </div>
+        <div class="price-row">
+          <span>Service fee</span>
+          <span>₹0</span>
+        </div>
+        <hr class="price-divider">
+        <div class="price-row total">
+          <span>Total</span>
+          <span>₹<%= booking.totalPrice.toLocaleString("en-IN") %></span>
+        </div>
+      </div>
+      
+      <hr class="divider">
+      
+      <div class="booking-actions">
+        <a href="/listings/<%= booking.listing._id %>" class="btn btn-primary">View Listing</a>
+        <a href="/bookings" class="btn btn-outline">Back to Trips</a>
+      </div>
+    </div>
+  </div>
+  
+  <div class="booking-show-sidebar">
+    <div class="listing-preview">
+      <img src="<%= booking.listing.image.url %>" alt="<%= booking.listing.title %>">
+      <div class="preview-info">
+        <h4><%= booking.listing.title %></h4>
+        <p><%= booking.listing.location %></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.booking-show-container {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 80px 80px 40px;
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 40px;
+}
+
+.booking-title {
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+.booking-detail-card {
+  background: white;
+  border: 1px solid #ebebeb;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.booking-header {
+  margin-bottom: 24px;
+}
+
+.booking-status {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: capitalize;
+  margin-bottom: 12px;
+}
+
+.booking-status.confirmed {
+  background: #d4edda;
+  color: #155724;
+}
+
+.booking-status.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.booking-status.cancelled {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.booking-header h2 {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+}
+
+.booking-location {
+  font-size: 16px;
+  color: #717171;
+  margin: 0;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid #ebebeb;
+  margin: 24px 0;
+}
+
+.booking-details {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.detail-row {
+  display: flex;
+  gap: 40px;
+}
+
+.detail-item {
+  flex: 1;
+}
+
+.detail-item h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #717171;
+  margin: 0 0 4px 0;
+}
+
+.detail-item p {
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.booking-price {
+  margin-top: 24px;
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+
+.price-row.total {
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.price-divider {
+  border: none;
+  border-top: 1px solid #ebebeb;
+  margin: 16px 0;
+}
+
+.booking-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.btn {
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: linear-gradient(to right, #e61e4d, #e31c5f, #d70466);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(to right, #d41e4d, #c31c5f);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid #222;
+  color: #222;
+}
+
+.btn-outline:hover {
+  background: #f7f7f7;
+}
+
+.listing-preview {
+  border: 1px solid #ebebeb;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.listing-preview img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.preview-info {
+  padding: 16px;
+}
+
+.preview-info h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+}
+
+.preview-info p {
+  font-size: 14px;
+  color: #717171;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .booking-show-container {
+    grid-template-columns: 1fr;
+    padding: 80px 24px 24px;
+  }
+  
+  .detail-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .booking-actions {
+    flex-direction: column;
+  }
+}
+</style>

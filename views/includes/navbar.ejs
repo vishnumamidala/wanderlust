@@ -1,0 +1,66 @@
+<nav class="navbar">
+  <a href="/listings" class="navbar-brand">
+    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+      <path d="M16 1c2.008 0 3.463.963 5.488 3.014 2.025 2.05 3.012 4.82 3.012 8.486 0 4.205-1.345 7.9-3.012 7.9-1.667 0-3.012-2.986-3.012-7.9 0-2.225.51-4.34 1.912-6.94L16 6.05l-1.388-1.49C10.578 5.35 10.088 3.235 10.088 1c0-2.666.987-6.436 3.012-8.486C12.537 1.963 13.992 1 16 1z"/>
+    </svg>
+    <span>WanderLust</span>
+  </a>
+
+  <div class="navbar-center">
+    <a href="/listings" class="active">Stays</a>
+    <a href="#">Experiences</a>
+    <a href="#">Online Experiences</a>
+  </div>
+
+  <div class="navbar-right">
+
+<% if (typeof currentUser !== 'undefined' && currentUser) { %>
+
+      <!-- ✅ Correct Stripe Connect Entry -->
+      <a href="/connect" class="host-btn">
+        Become a Host
+      </a>
+
+      <a href="/wishlists" class="host-btn">Wishlists</a>
+      <a href="/bookings" class="host-btn">Trips</a>
+
+      <button class="user-dropdown-btn"
+              onclick="window.location.href='/users/profile'">
+        <span style="font-size:14px; color:#737373;">
+          <%= currentUser.username %>
+        </span>
+        <div class="user-avatar-small">
+          <%= currentUser.username
+              ? currentUser.username.charAt(0).toUpperCase()
+              : 'U' %>
+        </div>
+      </button>
+
+    <% } else { %>
+
+      <!-- 🔒 Not logged in -->
+      <a href="/users/login" class="host-btn">
+        Become a Host
+      </a>
+
+      <a href="/users/login" class="host-btn">
+        Log in
+      </a>
+
+      <a href="/users/register" class="host-btn">
+        Sign up
+      </a>
+
+      <button class="user-dropdown-btn"
+              onclick="window.location.href='/users/login'">
+        <svg viewBox="0 0 32 32"
+             style="width:16px;height:16px;fill:#717171;">
+          <path d="M16 .5c2.008 0 3.463.963 5.488 3.014 2.025 2.05 3.012 4.82 3.012 8.486 0 4.205-1.345 7.9-3.012 7.9-1.667 0-3.012-2.986-3.012-7.9 0-2.225.51-4.34 1.912-6.94L16 6.05l-1.388-1.49C10.578 5.35 10.088 3.235 10.088 1c0-2.666.987-6.436 3.012-8.486C12.537 1.963 13.992 1 16 1z"/>
+        </svg>
+        <div class="user-avatar-small">G</div>
+      </button>
+
+    <% } %>
+
+  </div>
+</nav>
